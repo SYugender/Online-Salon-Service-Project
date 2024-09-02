@@ -62,9 +62,9 @@
 	</section>
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="F:\Online_Salon_Service\Auth_Service"/>
 			<item value="F:\online-salone\Auth_Service\Auth_Service"/>
 			<item value="F:\online-salone"/>
-			<item value="F:\Online_Salon_Service\Auth_Service"/>
 			<item value="F:\Online_Salon_Service\GateWay"/>
 			<item value="F:\online-salone\GateWay"/>
 			<item value="F:\Online_Salon_Service\Authentication"/>
