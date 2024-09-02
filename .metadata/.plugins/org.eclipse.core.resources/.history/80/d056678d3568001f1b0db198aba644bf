@@ -1,0 +1,99 @@
+package com.wipro.Controller;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.wipro.Entity.Booking;
+import com.wipro.service.BookingService;
+
+import jakarta.ws.rs.core.MediaType;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test") // Ensure you are using the correct profile
+public class BookingControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private BookingService bookingService;
+
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Register the module for Java 8 date/time types
+    }
+
+    @Test
+    void testGetAllBookings() throws Exception {
+        mockMvc.perform(get("/bookings"))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testCreateBooking() throws Exception {
+        Booking booking = new Booking();
+        booking.setCustomerId(1L);
+        booking.setStaffId(1L);
+        booking.setServiceId(1L);
+        booking.setAppointmentTime(LocalDateTime.now());
+        booking.setStatus("Confirmed");
+
+        when(bookingService.createBooking(any(Booking.class))).thenReturn(booking);
+
+        mockMvc.perform(post("/bookings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(booking)))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.status").value("Confirmed"));
+    }
+
+    @Test
+    void testUpdateBooking() throws Exception {
+        Booking booking = new Booking();
+        booking.setCustomerId(1L);
+        booking.setStaffId(1L);
+        booking.setServiceId(1L);
+        booking.setAppointmentTime(LocalDateTime.now());
+        booking.setStatus("Confirmed");
+
+        when(bookingService.updateBooking(anyLong(), any(Booking.class))).thenReturn(booking);
+
+        mockMvc.perform(put("/bookings/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(booking)))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.status").value("Confirmed"));
+    }
+
+    @Test
+    void testDeleteBooking() throws Exception {
+        mockMvc.perform(delete("/bookings/1"))
+               .andExpect(status().isOk());
+    }
+}

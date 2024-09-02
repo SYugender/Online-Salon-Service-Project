@@ -1,0 +1,13 @@
+package com.wipro.config;
+
+import java.util.Collections;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+public class JwtAuthenticationToken extends UsernamePasswordAuthenticationToken {
+
+    public JwtAuthenticationToken(String username) {
+        super(username, null, Collections.emptyList()); 
+    }
+}
+

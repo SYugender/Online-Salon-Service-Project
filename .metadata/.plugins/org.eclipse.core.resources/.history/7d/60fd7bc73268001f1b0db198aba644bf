@@ -1,0 +1,104 @@
+package com.wipro.controller;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wipro.Entity.SalonService;
+import com.wipro.service.SalonServiceService;
+
+@WebMvcTest(ServiceController.class)
+public class ServiceControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private SalonServiceService salonServiceService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testGetAllServices() throws Exception {
+        SalonService service = new SalonService();
+        service.setId(1L);
+        service.setName("Haircut");
+        service.setDescription("Basic haircut");
+        service.setPrice(20.0);
+
+        when(salonServiceService.getAllServices()).thenReturn(List.of(service));
+
+        mockMvc.perform(get("/services")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Haircut"))
+                .andExpect(jsonPath("$[0].description").value("Basic haircut"))
+                .andExpect(jsonPath("$[0].price").value(20.0));
+    }
+
+    @Test
+    void testCreateService() throws Exception {
+        SalonService service = new SalonService();
+        service.setId(1L);
+        service.setName("Haircut");
+        service.setDescription("Basic haircut");
+        service.setPrice(20.0);
+
+        when(salonServiceService.createOrUpdateService(any(SalonService.class))).thenReturn(service);
+
+        mockMvc.perform(post("/services")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(service)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Haircut"))
+                .andExpect(jsonPath("$.description").value("Basic haircut"))
+                .andExpect(jsonPath("$.price").value(20.0));
+    }
+
+    @Test
+    void testUpdateService() throws Exception {
+        SalonService service = new SalonService();
+        service.setId(1L);
+        service.setName("Haircut");
+        service.setDescription("Basic haircut");
+        service.setPrice(20.0);
+
+        when(salonServiceService.createOrUpdateService(any(SalonService.class))).thenReturn(service);
+
+        mockMvc.perform(put("/services/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(service)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Haircut"))
+                .andExpect(jsonPath("$.description").value("Basic haircut"))
+                .andExpect(jsonPath("$.price").value(20.0));
+    }
+
+    @Test
+    void testDeleteService() throws Exception {
+        doNothing().when(salonServiceService).deleteService(1L);
+
+        mockMvc.perform(delete("/services/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+}

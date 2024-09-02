@@ -1,0 +1,9 @@
+spring.application.name=service-registry-Eureka-Server
+
+server.port=8761
+
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+
+# Eureka Server Configuration
+eureka.server.wait-time-in-ms-when-sync-empty=13000000

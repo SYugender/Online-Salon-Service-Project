@@ -1,0 +1,90 @@
+package com.wipro.Controller;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wipro.service.StaffService;
+import com.wipro.entity.Staff;
+
+@WebMvcTest(StaffController.class)
+public class StaffControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private StaffService staffService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    void testGetAllStaff() throws Exception {
+        Staff staff = new Staff();
+        staff.setId(1L);
+        staff.setName("John Doe");
+        staff.setRole("Developer");
+
+        when(staffService.getAllStaff()).thenReturn(List.of(staff));
+
+        mockMvc.perform(get("/staff")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("John Doe"));
+    }
+
+    @Test
+    void testCreateStaff() throws Exception {
+        Staff staff = new Staff();
+        staff.setId(1L);
+        staff.setName("John Doe");
+        staff.setRole("Developer");
+
+        when(staffService.createOrUpdateStaff(any(Staff.class))).thenReturn(staff);
+
+        mockMvc.perform(post("/staff")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(staff)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("John Doe"));
+    }
+
+    @Test
+    void testUpdateStaff() throws Exception {
+        Staff staff = new Staff();
+        staff.setId(1L);
+        staff.setName("John Doe");
+        staff.setRole("Developer");
+
+        when(staffService.createOrUpdateStaff(any(Staff.class))).thenReturn(staff);
+
+        mockMvc.perform(put("/staff/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(staff)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("John Doe"));
+    }
+
+    @Test
+    void testDeleteStaff() throws Exception {
+        doNothing().when(staffService).deleteStaff(1L);
+
+        mockMvc.perform(delete("/staff/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+}

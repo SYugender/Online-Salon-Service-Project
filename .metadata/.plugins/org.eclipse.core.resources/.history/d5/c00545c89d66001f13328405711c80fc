@@ -1,0 +1,62 @@
+package com.wipro.config;
+
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.wipro.entity.Staff;
+
+public class CustomUserDetails implements UserDetails {
+
+    private final Staff staff;
+
+    public CustomUserDetails(Staff staff) {
+        this.staff = staff;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // If you have roles or authorities, return them here
+        // For now, returning an empty list
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getPassword() {
+        // Assuming password is not stored in the Staff entity
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return staff.getName();  // or however you are storing the username
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;  // Implement your logic
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;  // Implement your logic
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;  // Implement your logic
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;  // Implement your logic
+    }
+
+    // Additional methods if necessary
+    public Staff getStaff() {
+        return staff;
+    }
+}
+

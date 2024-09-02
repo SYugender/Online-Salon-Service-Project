@@ -1,0 +1,8 @@
+package com.wipro.Repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.wipro.Entity.Booking;
+
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+}
